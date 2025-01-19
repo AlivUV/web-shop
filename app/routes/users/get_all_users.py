@@ -7,4 +7,4 @@ from models import User
 @app.route('/user/get-all')
 def get_all_users():
     all_users = User.get_all()
-    return render_template('users.html', users=all_users)
+    return render_template('users/show_users.html', users=all_users)

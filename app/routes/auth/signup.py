@@ -6,7 +6,7 @@ from models import User
 from models import Client
 from server import app
 
-@app.route('/user/signup', methods=['GET', 'POST'])
+@app.route('/signup', methods=['GET', 'POST'])
 def signup():
     '''
     if current_user.is_authenticated:
@@ -30,4 +30,4 @@ def signup():
             login_user(user, remember=True)
             '''
             return redirect(url_for('home'))
-    return render_template('signup.html', form=form)
+    return render_template('auth/signup.html', form=form)

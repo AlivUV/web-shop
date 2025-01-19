@@ -6,4 +6,4 @@ from server import app
 @app.route('/home')
 @app.route('/index')
 def home():
-    return render_template('index.html')
+    return render_template('public/index.html')

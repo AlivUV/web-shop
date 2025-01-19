@@ -1,6 +1,7 @@
 from dotenv import load_dotenv
-from flask import Flask
 from os import environ
+
+from flask import Flask
 
 
 # Load environment variables from .env
@@ -14,6 +15,9 @@ app.config['SECRET_KEY'] = environ.get('APP_SECRET_KEY')
 
 # Set up the database
 app.config['SQLALCHEMY_DATABASE_URI'] = f'{environ.get('DB_DBMS')}://{environ.get('DB_USER')}:{environ.get('DB_PASSWORD')}@{environ.get('DB_HOST')}/{environ.get('DB_NAME')}'
+
+# Defining Login Manager
+import login_manager
 
 # Defining Routes
 import routes
