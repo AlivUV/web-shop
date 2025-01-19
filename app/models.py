@@ -41,7 +41,7 @@ class User(Base, UserMixin):
     id: Mapped[int] = mapped_column(Integer, Sequence('user_id_seq'), primary_key=True)
     name: Mapped[str] = mapped_column(String(128))
     email: Mapped[str] = mapped_column(String(128), unique=True)
-    password: Mapped[str] = mapped_column(String(128))
+    password_hash: Mapped[str] = mapped_column(String(256))
     date_added: Mapped[datetime] = mapped_column(Date, default=datetime.utcnow)
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
     is_admin: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
@@ -49,6 +49,14 @@ class User(Base, UserMixin):
     client: Mapped['Client'] = relationship(
         'Client', back_populates='user', cascade='all, delete-orphan'
     )
+
+    @property
+    def raw_password(self):
+        raise AttributeError('Attribute "password" is not readable.')
+
+    @raw_password.setter
+    def raw_password(self, password):
+        self.password_hash = generate_password_hash(password)
     
     def __repr__(self) -> str:
         """
@@ -61,18 +69,53 @@ class User(Base, UserMixin):
             str: A string representation of the User object.
         """
         return f'User(id={self.id}, name={self.name}, email={self.email})'
-    
-    def set_password(self, password):
-        """
-        Sets the user's password.
-        """
-        self.password = generate_password_hash(password)
 
     def check_password(self, password):
         """
         Checks if the provided password matches the user's password.
         """
-        return check_password_hash(self.password, password)
+        return check_password_hash(self.password_hash, password)
+    
+    @staticmethod
+    def create_user(name, email, password):
+        """
+        Creates a new user.
+        """
+        with Session(engine) as session:
+            user = User(name=name, email=email)
+            user.raw_password = password
+            session.add(user)
+            client = Client(user_id=session.scalar(select(User.id).order_by(User.id.desc())))
+            session.add(client)
+            session.commit()
+            return user
+    
+    @staticmethod
+    def create_superuser(name, email, password):
+        """
+        Creates a new user.
+        """
+        with Session(engine) as session:
+            user = User(name=name, email=email, is_admin=True)
+            user.raw_password = password
+            session.add(user)
+            session.commit()
+            return user
+
+    @staticmethod
+    def get_all():
+        """
+        Retrieves all users.
+
+        Returns:
+            users: The list with all the users, or None if not found.
+        """
+        with Session(engine) as session:
+            query = select(User)
+            users = []
+            for user in session.scalars(query):
+                users.append(user)
+            return users
 
     @staticmethod
     def get_by_id(id):
@@ -87,6 +130,21 @@ class User(Base, UserMixin):
         """
         with Session(engine) as session:
             user = select(User).where(User.id == id)
+            return session.scalar(user)
+
+    @staticmethod
+    def get_by_email(email):
+        """
+        Retrieves a user by their email.
+
+        Args:
+            email (str): The email of the user to retrieve.
+
+        Returns:
+            User: The user with the specified email, or None if not found.
+        """
+        with Session(engine) as session:
+            user = select(User).where(User.email == email)
             return session.scalar(user)
 
 
@@ -118,7 +176,19 @@ class Client(Base):
         Returns:
             str: A string representation of the Client object.
         """
-        return f'Client(id={self.id!r}, user={self.user_id!r})'
+        return f'Client(id={self.client_id!r}, user={self.user_id!r})'
+    
+    @staticmethod
+    def create_client(user_id):
+        """
+        Creates a new client.
+        """
+        with Session(engine) as session:
+            client = Client()
+            client.user_id = user_id
+            session.add(client)
+            session.commit()
+            return client
 
     @staticmethod
     def get_by_id(id):
