@@ -11,6 +11,7 @@ from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.orm import Session
 from typing import List
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 # Load environment variables from .env
@@ -60,6 +61,18 @@ class User(Base, UserMixin):
             str: A string representation of the User object.
         """
         return f'User(id={self.id}, name={self.name}, email={self.email})'
+    
+    def set_password(self, password):
+        """
+        Sets the user's password.
+        """
+        self.password = generate_password_hash(password)
+
+    def check_password(self, password):
+        """
+        Checks if the provided password matches the user's password.
+        """
+        return check_password_hash(self.password, password)
 
     @staticmethod
     def get_by_id(id):
