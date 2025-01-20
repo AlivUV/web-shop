@@ -1,4 +1,4 @@
-from flask import render_template, redirect, url_for
+from flask import flash, render_template, redirect, url_for
 from flask_login import login_required
 from forms import UpdateProductForm
 
@@ -20,12 +20,14 @@ def update_product(id):
         if form.is_active.data:
             product.update_active(not product.is_active)
             success = 'The product has been updated'
+            flash(success, 'success')
         elif form.submit.data:
             product_data = {
                 'price': form.price.data
             }
             product.update_price(product_data['price'])
-            success = 'Product updated successfully.'  
+            success = 'Product updated successfully.'
+            flash(success, 'success')
         else:
             '' 
         return redirect(url_for('get_all_products'))

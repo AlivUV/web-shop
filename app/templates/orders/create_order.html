@@ -1,0 +1,22 @@
+{% extends "clients/client_dashboard.html" %}
+{% block title %} Create order {% endblock %}
+{% block content %}
+
+<form method="post">
+    {{ form.hidden_tag() }}
+
+    <h1>Create order</h1>
+
+    {% for product in products %}
+    <label id="{{product.product_id}}">{{product.name}}. <strong>Stock:</strong> {{product.stock}}</label>
+    <input id="input_quantity" type="number" min="0" max="{{product.stock}}" placeholder="Quantity" />
+    <button id="{{product.product_id}}" type="submit">Add</button>
+    <br />
+    {% endfor %}
+
+    <button><a style="text-decoration: none;" href="/shop">Cancel</a></button>
+
+
+</form>
+
+{% endblock %}

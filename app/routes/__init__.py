@@ -1,6 +1,7 @@
 from routes import home
-from routes.auth import signup
 from routes.auth import login
+from routes.auth import logout
+from routes.auth import signup
 from routes.admin import admin_dashboard
 from routes.admin import add_product
 from routes.admin import update_product
@@ -8,3 +9,4 @@ from routes.clients import client_dashboard
 from routes.users import get_all_users
 from routes.users import get_user
 from routes.products import get_all_products
+from routes.orders import new_order

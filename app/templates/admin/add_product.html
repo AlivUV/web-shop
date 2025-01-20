@@ -1,4 +1,4 @@
-{% extends "base_template.html" %}
+{% extends "admin/admin_dashboard.html" %}
 {% block title %} Add Product {% endblock %}
 {% block content %}
 
@@ -35,6 +35,7 @@
     <span style="color: red">{{ price_error }}</span>
     {% endfor %}
     <br />
+    <button><a style="text-decoration: none;" href="/admin/dashboard">Cancel</a></button>
     {{ form.submit() }}
     <br />
 

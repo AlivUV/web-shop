@@ -1,5 +1,11 @@
 {% extends "base_template.html" %}
 {% block title %} Web Store Home {% endblock %}
+{% block navbar %}
+<nav>
+    <a style="text-decoration: none;" href="/logout">Logout</a>
+</nav>
+{% endblock %}
 {% block content %}
-<h1>You are in the home page of the web store</h1>
+<h1>Web Store Home Page</h1>
+<button><a style="text-decoration: none;" href="/product/get-all">Show products</a></button>
 {% endblock %}

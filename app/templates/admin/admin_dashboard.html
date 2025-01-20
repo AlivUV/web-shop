@@ -1,5 +1,12 @@
 {% extends "base_template.html" %}
-{% block title %} Web Store Home {% endblock %}
+{% block title %} Admin {% endblock %}
+{% block navbar %}
+<nav>
+    <a style="text-decoration: none;" href="/logout">Logout</a>
+</nav>
+{% endblock %}
 {% block content %}
-<h1>You are in the admin dashboard</h1>
+<h1>Admin dashboard</h1>
+<button><a style="text-decoration: none;" href="/admin/add-product">Add product</a></button>
+<button><a style="text-decoration: none;" href="/product/get-all">Show or update products</a></button>
 {% endblock %}

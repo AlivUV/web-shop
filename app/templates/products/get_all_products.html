@@ -1,9 +1,30 @@
 {% extends "base_template.html" %}
 {% block title %} Web Store Home {% endblock %}
+{% block navbar %}
+<nav>
+        <a style="text-decoration: none;" href="/logout">Logout</a>
+</nav>
+{% endblock %}
+
 {% block content %}
 {% for product in products %}
-<h1>{{ product }}</h1>
+<label style="font-size: 2rem; font-weight: bold;">{{ product.name }}</label>
+{% if current_user.is_admin %}
+<button><a style="text-decoration: none;" id={{product.product_id}}
+                href="/admin/update-product/{{product.product_id}}">Edit</a></button>
 {% else %}
-<h1>No products found</h1>
+<button><a style="text-decoration: none;" id={{product.product_id}} href="/order/new-order">Order</a></button>
+{% endif %}
+
+<br />
+{% else %}
+<label style="font-size: 2rem; font-weight: bold;">No products found</label>
 {% endfor %}
+<br />
+
+{% if current_user.is_admin %}
+<button><a style="text-decoration: none;" href="/admin/dashboard">Cancel</a></button>
+{% else %}
+<button><a style="text-decoration: none;" href="/shop">Cancel</a></button>
+{% endif %}
 {% endblock %}

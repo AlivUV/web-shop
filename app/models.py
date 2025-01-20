@@ -259,7 +259,6 @@ class Product(Base):
             session.commit()
             return self
 
-    
     @staticmethod
     def create_product(name, description, stock, price):
         """
@@ -349,6 +348,18 @@ class Order(Base):
         """
         return f'Order(id={self.order_id!r}, creation={self.creation_date!r}, client={self.client_id!r})'
 
+    @staticmethod
+    def create_order(client_id):
+        """
+        Creates a new order.
+        """
+        with Session(engine) as session:
+            order = Order(client_id=client_id)
+            session.add(order)
+            order = session.scalar(select(Order).order_by(Order.order_id.desc))
+            session.commit()
+            return order
+    
 
 class Details(Base):
     """
