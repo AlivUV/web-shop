@@ -1,0 +1,9 @@
+{% extends "base_template.html" %}
+{% block title %} Web Store Home {% endblock %}
+{% block content %}
+{% for product in products %}
+<h1>{{ product }}</h1>
+{% else %}
+<h1>No products found</h1>
+{% endfor %}
+{% endblock %}

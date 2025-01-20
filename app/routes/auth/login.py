@@ -1,16 +1,12 @@
 from flask import render_template, redirect, url_for
-from flask_login import login_user
-from forms.login_form import LoginForm
+from flask_login import login_user, logout_user
+from forms import LoginForm
 
 from models import User
 from server import app
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    '''
-    if current_user.is_authenticated:
-        return redirect(url_for('index'))
-    '''
     form = LoginForm()
     if form.validate_on_submit():
         user_data = {
@@ -25,4 +21,5 @@ def login():
             return redirect(url_for('admin_dashboard'))
         else:
             raise ValueError('Invalid password.')
+    logout_user()
     return render_template('auth/login.html', form=form)

@@ -17,7 +17,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 # Load environment variables from .env
 load_dotenv()
 
-engine = create_engine(f'{environ.get('DB_DBMS')}://{environ.get('DB_USER')}:{environ.get('DB_PASSWORD')}@{environ.get('DB_HOST')}/{environ.get('DB_NAME')}', echo=True)
+engine = create_engine(f'{environ.get('DB_DBMS')}://{environ.get('DB_USER')}:{environ.get('DB_PASSWORD')}@{environ.get('DB_HOST')}:{environ.get('DB_PORT')}/{environ.get('DB_NAME')}', echo=True)
 
 class Base(DeclarativeBase):
     pass
@@ -222,7 +222,7 @@ class Product(Base):
 
     product_id: Mapped[int] = mapped_column(Integer, Sequence('product_id_seq'), primary_key=True)
     is_active:Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
-    name: Mapped[str] = mapped_column(String(128))
+    name: Mapped[str] = mapped_column(String(128), unique=True)
     description: Mapped[str] = mapped_column(String(512))
     stock: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     price: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)
@@ -243,6 +243,78 @@ class Product(Base):
         """
         return f'Product(id={self.product_id!r}, name={self.name!r})'
 
+    def update_price(self, price = 0):
+        with Session(engine) as session:
+            session.query(Product).filter(Product.product_id == self.product_id).update({
+                Product.price: price,
+            })
+            session.commit()
+            return self
+
+    def update_active(self, is_active):
+        with Session(engine) as session:
+            session.query(Product).filter(Product.product_id == self.product_id).update({
+                Product.is_active: is_active,
+            })
+            session.commit()
+            return self
+
+    
+    @staticmethod
+    def create_product(name, description, stock, price):
+        """
+        Creates a new product.
+        """
+        with Session(engine) as session:
+            product = Product(name=name, description=description, stock=stock, price=price)
+            session.add(product)
+            session.commit()
+            return product
+
+    @staticmethod
+    def get_all():
+        """
+        Retrieves all products.
+
+        Returns:
+            products: The list with all the products, or None if not found.
+        """
+        with Session(engine) as session:
+            query = select(Product)
+            products = []
+            for product in session.scalars(query):
+                products.append(product)
+            return products
+
+    @staticmethod
+    def get_by_id(id):
+        """
+        Retrieves a product by their ID.
+
+        Args:
+            id (int): The ID of the product to retrieve.
+
+        Returns:
+            Product: The product with the specified ID, or None if not found.
+        """
+        with Session(engine) as session:
+            product = select(Product).where(Product.product_id == id)
+            return session.scalar(product)
+
+    @staticmethod
+    def get_by_name(name):
+        """
+        Retrieves a product by their name.
+
+        Args:
+            name (int): The name of the product to retrieve.
+
+        Returns:
+            Product: The product with the specified name, or None if not found.
+        """
+        with Session(engine) as session:
+            product = select(Product).where(Product.name == name)
+            return session.scalar(product)
 
 
 class Order(Base):

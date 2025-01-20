@@ -1,0 +1,41 @@
+{% extends "base_template.html" %}
+{% block title %} Update Product {% endblock %}
+{% block content %}
+
+<form method="post" novalidate>
+    {{ form.hidden_tag() }}
+
+    <h1>Update the product data</h1>
+
+    <label> <strong> {{ old_data.name }} </strong> </label>
+    <br />
+    <label> {{ old_data.description }}</label>
+    <br />
+    <label> <strong>Actual stock: </strong>{{ old_data.stock }}</label>
+    <br />
+    {{ form.price.label }}
+    {{ form.price() }}
+    <label> <strong>Actual: </strong>{{ old_data.price }}</label>
+    {% for price_error in form.price.errors%}
+    <br />
+    <span style="color: red">{{ price_error }}</span>
+    {% endfor %}
+    <br />
+    {{ form.cancel() }}
+    {{ form.is_active }}
+    {{ form.submit() }}
+    <br />
+
+    <span style="color: red">
+        <strong>{{ error }}</strong>
+    </span>
+
+    <br />
+
+    <span style="color: greenyellow">
+        <strong>{{ success }}</strong>
+    </span>
+
+</form>
+
+{% endblock %}
